@@ -14,5 +14,5 @@ public interface StepService {
     boolean deleteStep(Long id);
     StepDto changeStep(StepDto stepDto);
     int findCountStepsInRecipe(Long recipeId);
-    void deleteFile(Long stepId);
+    Long deleteFile(Long stepId);
 }

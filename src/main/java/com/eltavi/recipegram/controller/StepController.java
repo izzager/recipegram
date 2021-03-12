@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -56,6 +57,7 @@ public class StepController {
                 fileTable.setPhotoContentLength(Long.valueOf(file.getSize()).intValue());
                 fileTable.setPhotoContentType(file.getContentType());
                 fileTable.setPhotoBlob(bytes);
+
                 fileService.saveFile(fileTable);
                 stepDto.setImageStep(fileTable);
                 return stepService.save(stepDto);
@@ -80,15 +82,15 @@ public class StepController {
                 fileTable.setPhotoContentLength(Long.valueOf(file.getSize()).intValue());
                 fileTable.setPhotoContentType(file.getContentType());
                 fileTable.setPhotoBlob(bytes);
-                //TODO fix links
-                fileService.deleteFile(id);
-                stepService.deleteFile(id);
+
+                Long fileId = stepService.deleteFile(id);
+                fileService.deleteFileById(fileId);
                 fileService.saveFile(fileTable);
 
                 stepDto.setImageStep(fileTable);
                 stepDto.setId(id);
                 return stepService.changeStep(stepDto);
-            } catch (Exception e) {
+            } catch (IOException e) {
                 throw new BadRequestException("You failed to upload => " + e.getMessage());
             }
         } else {

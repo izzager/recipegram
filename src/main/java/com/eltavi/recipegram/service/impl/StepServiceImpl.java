@@ -77,10 +77,12 @@ public class StepServiceImpl implements StepService {
         return stepRepository.findAllByRecipeId(recipeId).size();
     }
 
-    public void deleteFile(Long stepId) {
+    public Long deleteFile(Long stepId) {
         Step step = findStepById(stepId);
+        Long fileId = step.getImageStep().getId();
         step.setImageStep(null);
         stepRepository.save(step);
+        return fileId;
     }
 
 }

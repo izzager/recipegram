@@ -27,6 +27,15 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
+    public void deleteFileById(Long id) {
+        if (fileRepository.existsById(id)) {
+            fileRepository.deleteById(id);
+        } else {
+            throw new NotFoundException("There is no file");
+        }
+    }
+
+    @Override
     public FileTable saveFile(FileTable fileTable) {
         return fileRepository.save(fileTable);
     }
