@@ -30,8 +30,6 @@ public class User {
 
     private String password;
 
-    private String imageProfile;
-
     private String nickname;
 
     private String descriptionProfile;

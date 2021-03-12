@@ -18,7 +18,6 @@ public class UserMapper {
     public UserDto userToUserDto(User user) {
         UserDto userDto = new UserDto();
         userDto.setId(user.getId());
-        userDto.setImageProfile(user.getImageProfile());
         userDto.setNickname(user.getNickname());
         userDto.setDescriptionProfile(user.getDescriptionProfile());
 
@@ -40,7 +39,6 @@ public class UserMapper {
     public SubscribeDto userToSubscribeDto(User user) {
         SubscribeDto subscribeDto = new SubscribeDto();
         subscribeDto.setId(user.getId());
-        subscribeDto.setImageProfile(user.getImageProfile());
         subscribeDto.setNickname(user.getNickname());
         subscribeDto.setDescriptionProfile(user.getDescriptionProfile());
         return subscribeDto;

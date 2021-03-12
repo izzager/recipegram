@@ -11,8 +11,6 @@ public class SubscribeDto {
 
     private Long id;
 
-    private String imageProfile;
-
     private String nickname;
 
     private String descriptionProfile;
