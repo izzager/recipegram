@@ -12,8 +12,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -42,6 +42,6 @@ public class User {
             joinColumns = @JoinColumn(name = "id_follower"),
             inverseJoinColumns = @JoinColumn(name = "id_following")
     )
-    private List<User> subscriptions = new ArrayList<>();
+    private Set<User> subscriptions = new HashSet<>();
 
 }

@@ -21,4 +21,9 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
         return new ExceptionInfo(e.getMessage());
     }
 
+    @ExceptionHandler({ResourceForbiddenException.class})
+    @ResponseStatus(value = HttpStatus.FORBIDDEN)
+    public ExceptionInfo handleResourceForbidden(final ResourceForbiddenException e) {
+        return new ExceptionInfo(e.getMessage());
+    }
 }

@@ -16,8 +16,6 @@ public class RecipeDto {
 
     private UserDto user;
 
-    private Long userId;
-
     private String category;
 
     private String recipeName;

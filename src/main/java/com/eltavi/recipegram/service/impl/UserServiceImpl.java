@@ -2,6 +2,7 @@ package com.eltavi.recipegram.service.impl;
 
 import com.eltavi.recipegram.dto.UserDto;
 import com.eltavi.recipegram.entity.User;
+import com.eltavi.recipegram.exception.BadRequestException;
 import com.eltavi.recipegram.exception.NotFoundException;
 import com.eltavi.recipegram.mapper.UserMapper;
 import com.eltavi.recipegram.repository.UserRepository;
@@ -53,7 +54,11 @@ public class UserServiceImpl implements UserService {
             User follower = userOptional.get();
             Optional<User> following = userRepository.findById(followingId);
             if (following.isPresent()) {
+                if (follower.getSubscriptions().contains(following.get())) {
+                    throw new BadRequestException("You can't subscribe user twice");
+                }
                 follower.getSubscriptions().add(following.get());
+                userRepository.save(follower);
             } else {
                 throw new NotFoundException("There is no user with this id");
             }
@@ -73,12 +78,20 @@ public class UserServiceImpl implements UserService {
                     .findFirst();
             if (following.isPresent()) {
                 follower.getSubscriptions().remove(following.get());
+                userRepository.save(follower);
             } else {
-                throw new NotFoundException("There is no user with this id");
+                throw new NotFoundException("You are not following this user");
             }
         } else {
             throw new NotFoundException("There is no user with this id");
         }
+    }
+
+    @Override
+    public User findByUsername(String username) {
+        return userRepository
+                .findUserByUsername(username)
+                .orElseThrow(() -> new NotFoundException("There is no user with this username"));
     }
 
 }

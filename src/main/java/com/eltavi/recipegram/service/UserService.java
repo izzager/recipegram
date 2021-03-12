@@ -12,4 +12,5 @@ public interface UserService {
     List<User> findSubscribers(User user);
     void subscribe(Long followerId, Long followingId);
     void unsubscribe(Long followerId, Long followingId);
+    User findByUsername(String username);
 }

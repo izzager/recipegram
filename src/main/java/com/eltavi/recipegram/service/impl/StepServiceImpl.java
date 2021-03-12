@@ -5,7 +5,6 @@ import com.eltavi.recipegram.entity.Step;
 import com.eltavi.recipegram.exception.NotFoundException;
 import com.eltavi.recipegram.mapper.StepMapper;
 import com.eltavi.recipegram.repository.StepRepository;
-import com.eltavi.recipegram.service.RecipeService;
 import com.eltavi.recipegram.service.StepService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,7 +17,6 @@ import java.util.stream.Collectors;
 public class StepServiceImpl implements StepService {
 
     private final StepRepository stepRepository;
-    private final RecipeService recipeService;
     private final StepMapper stepMapper;
 
     public List<StepDto> findAll() {
@@ -48,7 +46,7 @@ public class StepServiceImpl implements StepService {
 
     public StepDto save(StepDto stepDto) {
         Step step = stepMapper.stepDtoToStep(stepDto);
-        step.setStepNumber(findCountStepsInRecipe(stepDto.getRecipeId()));
+        step.setStepNumber(findCountStepsInRecipe(stepDto.getRecipeId()) + 1);
         return stepMapper.stepToStepDto(stepRepository.save(step));
     }
 

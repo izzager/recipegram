@@ -1,6 +1,7 @@
 package com.eltavi.recipegram.controller;
 
 import com.eltavi.recipegram.dto.UserDto;
+import com.eltavi.recipegram.exception.BadRequestException;
 import com.eltavi.recipegram.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
 import java.util.List;
 
 @RequestMapping("/api")
@@ -29,16 +31,22 @@ public class UserController {
     }
 
     @PostMapping("users/{id}/subscribe")
-    public void subscribeToUser(@PathVariable Long id) {
-        //TODO fix with security
-        Long followerId = 1L;
+    public void subscribeToUser(Principal auth,
+                                @PathVariable Long id) {
+        Long followerId = userService.findByUsername(auth.getName()).getId();
+        if (id.equals(followerId)) {
+            throw new BadRequestException("You can't subscribe by yourself");
+        }
         userService.subscribe(followerId, id);
     }
 
     @PostMapping("users/{id}/unsubscribe")
-    public void unsubscribeFromUser(@PathVariable Long id) {
-        //TODO fix with security
-        Long followerId = 1L;
+    public void unsubscribeFromUser(Principal auth,
+                                    @PathVariable Long id) {
+        Long followerId = userService.findByUsername(auth.getName()).getId();
+        if (id.equals(followerId)) {
+            throw new BadRequestException("You can't unsubscribe from yourself");
+        }
         userService.unsubscribe(followerId, id);
     }
 }

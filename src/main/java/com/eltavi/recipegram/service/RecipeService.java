@@ -10,7 +10,7 @@ public interface RecipeService {
     RecipeDto findDtoById(Long id);
     Recipe findRecipeById(Long id);
     RecipeDto addRecipe(Recipe recipe);
-    boolean deleteRecipe(Long id);
+    boolean deleteRecipe(Long id, Long userId);
     RecipeDto like(Long id);
     RecipeDto dislike(Long id);
 }

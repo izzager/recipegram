@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -40,17 +41,20 @@ public class RecipeController {
     }
 
     @PostMapping("recipes")
-    public RecipeDto addRecipe(@RequestBody RecipeDto recipeDto) {
+    public RecipeDto addRecipe(Principal auth,
+                               @RequestBody RecipeDto recipeDto) {
         recipeDtoValidator.validate(recipeDto);
         Recipe recipe = recipeMapper.recipeDtoToRecipe(recipeDto);
-        User owner = userService.findUserById(recipeDto.getUserId());
+        User owner = userService.findByUsername(auth.getName());
         recipe.setUser(owner);
         return recipeService.addRecipe(recipe);
     }
 
     @DeleteMapping("recipes/{id}")
-    public void deleteRecipe(@PathVariable Long id) {
-        if (!recipeService.deleteRecipe(id)) {
+    public void deleteRecipe(Principal auth,
+                             @PathVariable Long id) {
+        Long userId = userService.findByUsername(auth.getName()).getId();
+        if (!recipeService.deleteRecipe(id, userId)) {
             throw new NotFoundException("There is no recipe with this id");
         }
     }
