@@ -15,4 +15,10 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
         return new ExceptionInfo(e.getMessage());
     }
 
+    @ExceptionHandler({BadRequestException.class})
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public ExceptionInfo handleBadRequest(final BadRequestException e) {
+        return new ExceptionInfo(e.getMessage());
+    }
+
 }

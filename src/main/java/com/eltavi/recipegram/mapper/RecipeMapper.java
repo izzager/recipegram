@@ -1,18 +1,8 @@
 package com.eltavi.recipegram.mapper;
 
 import com.eltavi.recipegram.dto.RecipeDto;
-import com.eltavi.recipegram.dto.StepDto;
-import com.eltavi.recipegram.dto.UserDto;
 import com.eltavi.recipegram.entity.Recipe;
-import com.eltavi.recipegram.entity.Step;
-import com.eltavi.recipegram.entity.User;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Named;
-import org.mapstruct.factory.Mappers;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 public interface RecipeMapper {

@@ -32,8 +32,6 @@ public class Recipe {
 
     private String recipeName;
 
-    private String imageRecipe;
-
     private int difficulty;
 
     private String description;
@@ -43,9 +41,9 @@ public class Recipe {
     @CreationTimestamp
     private LocalDateTime publicationDate;
 
-    private int likes;
+    private int likes = 0;
 
-    private int dislikes;
+    private int dislikes = 0;
 
     @OneToMany(mappedBy = "recipe")
     private List<Step> steps;

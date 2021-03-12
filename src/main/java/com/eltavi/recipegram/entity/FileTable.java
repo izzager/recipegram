@@ -8,30 +8,22 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Step {
-
+public class FileTable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "recipe_id")
-    private Recipe recipe;
+    //@Type(type="org.hibernate.type.BinaryType")
+    private byte[] photoBlob;
 
-    private int stepNumber;
+    private Integer photoContentLength;
 
-    private String description;
+    private String photoContentType;
 
-    @OneToOne
-    @JoinColumn(name = "file_id")
-    private FileTable imageStep;
-
+    private String photoName;
 }

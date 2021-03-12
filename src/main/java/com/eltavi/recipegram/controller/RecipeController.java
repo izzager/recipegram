@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -39,10 +38,9 @@ public class RecipeController {
     }
 
     @PostMapping("recipes")
-    public RecipeDto addRecipe(@RequestBody RecipeDto recipeDto,
-                               @RequestParam Long userId) {
+    public RecipeDto addRecipe(@RequestBody RecipeDto recipeDto) {
         System.out.println(recipeDto);
-        User owner = userService.findUserById(userId);
+        User owner = userService.findUserById(recipeDto.getUserId());
         Recipe recipe = recipeMapper.recipeDtoToRecipe(recipeDto);
         recipe.setUser(owner);
         return recipeService.addRecipe(recipe);

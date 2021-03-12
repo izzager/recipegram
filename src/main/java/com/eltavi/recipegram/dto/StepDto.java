@@ -1,5 +1,6 @@
 package com.eltavi.recipegram.dto;
 
+import com.eltavi.recipegram.entity.FileTable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,6 +18,6 @@ public class StepDto {
 
     private String description;
 
-    private String imageStep;
+    private FileTable imageStep;
 
 }

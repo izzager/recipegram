@@ -16,11 +16,11 @@ public class RecipeDto {
 
     private UserDto user;
 
+    private Long userId;
+
     private String category;
 
     private String recipeName;
-
-    private String imageRecipe;
 
     private int difficulty;
 

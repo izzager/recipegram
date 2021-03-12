@@ -28,9 +28,14 @@ public class StepServiceImpl implements StepService {
                 .collect(Collectors.toList());
     }
 
-    public StepDto findById(Long id) {
+    public StepDto findDtoById(Long id) {
         return stepRepository.findById(id)
                 .map(stepMapper::stepToStepDto)
+                .orElseThrow(() -> new NotFoundException("There is no step with this id"));
+    }
+
+    public Step findStepById(Long id) {
+        return stepRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("There is no step with this id"));
     }
 
@@ -43,6 +48,7 @@ public class StepServiceImpl implements StepService {
 
     public StepDto save(StepDto stepDto) {
         Step step = stepMapper.stepDtoToStep(stepDto);
+        step.setStepNumber(findCountStepsInRecipe(stepDto.getRecipeId()));
         return stepMapper.stepToStepDto(stepRepository.save(step));
     }
 
@@ -50,9 +56,12 @@ public class StepServiceImpl implements StepService {
         if (!stepRepository.existsById(stepDto.getId())) {
             throw new NotFoundException("There is no step with this id");
         }
-        Step step = stepMapper.stepDtoToStep(stepDto);
-        step.setRecipe(recipeService.findRecipeById(stepDto.getRecipeId()));
-        return stepMapper.stepToStepDto(stepRepository.save(step));
+        Step oldStep = stepRepository.findById(stepDto.getId()).get();
+        oldStep.setDescription(stepDto.getDescription());
+        if (stepDto.getImageStep() != null) {
+            oldStep.setImageStep(stepDto.getImageStep());
+        }
+        return stepMapper.stepToStepDto(stepRepository.save(oldStep));
     }
 
     public boolean deleteStep(Long id) {
@@ -63,4 +72,15 @@ public class StepServiceImpl implements StepService {
             return false;
         }
     }
+
+    public int findCountStepsInRecipe(Long recipeId) {
+        return stepRepository.findAllByRecipeId(recipeId).size();
+    }
+
+    public void deleteFile(Long stepId) {
+        Step step = findStepById(stepId);
+        step.setImageStep(null);
+        stepRepository.save(step);
+    }
+
 }
