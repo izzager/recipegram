@@ -1,6 +1,5 @@
 package com.eltavi.recipegram.repository;
 
-import com.eltavi.recipegram.entity.Recipe;
 import com.eltavi.recipegram.entity.Step;
 import org.springframework.data.jpa.repository.JpaRepository;
 

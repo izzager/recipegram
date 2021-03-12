@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,6 +48,30 @@ public class RecipeServiceImpl implements RecipeService {
             return true;
         } else {
             return false;
+        }
+    }
+
+    @Override
+    public RecipeDto like(Long id) {
+        Optional<Recipe> recipeOptional = recipeRepository.findById(id);
+        if (recipeOptional.isPresent()) {
+            Recipe recipe = recipeOptional.get();
+            recipe.setLikes(recipe.getLikes() + 1);
+            return recipeMapper.recipeToRecipeDto(recipeRepository.save(recipe));
+        } else {
+            throw new NotFoundException("There is no recipe with this id");
+        }
+    }
+
+    @Override
+    public RecipeDto dislike(Long id) {
+        Optional<Recipe> recipeOptional = recipeRepository.findById(id);
+        if (recipeOptional.isPresent()) {
+            Recipe recipe = recipeOptional.get();
+            recipe.setDislikes(recipe.getDislikes() + 1);
+            return recipeMapper.recipeToRecipeDto(recipeRepository.save(recipe));
+        } else {
+            throw new NotFoundException("There is no recipe with this id");
         }
     }
 

@@ -1,7 +1,6 @@
 package com.eltavi.recipegram.validator;
 
 import com.eltavi.recipegram.dto.StepDto;
-import com.eltavi.recipegram.entity.Step;
 import com.eltavi.recipegram.exception.BadRequestException;
 import org.springframework.stereotype.Component;
 

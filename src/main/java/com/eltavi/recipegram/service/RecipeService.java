@@ -11,4 +11,6 @@ public interface RecipeService {
     Recipe findRecipeById(Long id);
     RecipeDto addRecipe(Recipe recipe);
     boolean deleteRecipe(Long id);
+    RecipeDto like(Long id);
+    RecipeDto dislike(Long id);
 }

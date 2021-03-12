@@ -5,6 +5,7 @@ import com.eltavi.recipegram.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,5 +26,19 @@ public class UserController {
     @GetMapping("users/{id}")
     public UserDto showOneUser(@PathVariable Long id) {
         return userService.findDtoById(id);
+    }
+
+    @PostMapping("users/{id}/subscribe")
+    public void subscribeToUser(@PathVariable Long id) {
+        //TODO fix with security
+        Long followerId = 1L;
+        userService.subscribe(followerId, id);
+    }
+
+    @PostMapping("users/{id}/unsubscribe")
+    public void unsubscribeFromUser(@PathVariable Long id) {
+        //TODO fix with security
+        Long followerId = 1L;
+        userService.unsubscribe(followerId, id);
     }
 }

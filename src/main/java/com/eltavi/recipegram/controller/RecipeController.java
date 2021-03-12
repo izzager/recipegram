@@ -55,4 +55,14 @@ public class RecipeController {
         }
     }
 
+    @PostMapping("recipes/{id}/like")
+    public RecipeDto likeRecipe(@PathVariable Long id) {
+        return recipeService.like(id);
+    }
+
+    @PostMapping("recipes/{id}/dislike")
+    public RecipeDto dislikeRecipe(@PathVariable Long id) {
+        return recipeService.dislike(id);
+    }
+
 }

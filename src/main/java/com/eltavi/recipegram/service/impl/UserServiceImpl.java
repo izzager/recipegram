@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,6 +44,41 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> findSubscribers(User user) {
         return userRepository.findAllBySubscriptions(user);
+    }
+
+    @Override
+    public void subscribe(Long followerId, Long followingId) {
+        Optional<User> userOptional = userRepository.findById(followerId);
+        if (userOptional.isPresent()) {
+            User follower = userOptional.get();
+            Optional<User> following = userRepository.findById(followingId);
+            if (following.isPresent()) {
+                follower.getSubscriptions().add(following.get());
+            } else {
+                throw new NotFoundException("There is no user with this id");
+            }
+        } else {
+            throw new NotFoundException("There is no user with this id");
+        }
+    }
+
+    @Override
+    public void unsubscribe(Long followerId, Long followingId) {
+        Optional<User> userOptional = userRepository.findById(followerId);
+        if (userOptional.isPresent()) {
+            User follower = userOptional.get();
+            Optional<User> following = follower.getSubscriptions()
+                    .stream()
+                    .filter(user1 -> user1.getId().equals(followingId))
+                    .findFirst();
+            if (following.isPresent()) {
+                follower.getSubscriptions().remove(following.get());
+            } else {
+                throw new NotFoundException("There is no user with this id");
+            }
+        } else {
+            throw new NotFoundException("There is no user with this id");
+        }
     }
 
 }
