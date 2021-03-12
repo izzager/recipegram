@@ -6,6 +6,7 @@ import com.eltavi.recipegram.exception.BadRequestException;
 import com.eltavi.recipegram.exception.NotFoundException;
 import com.eltavi.recipegram.service.FileService;
 import com.eltavi.recipegram.service.StepService;
+import com.eltavi.recipegram.validator.StepDtoValidator;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,6 +29,7 @@ public class StepController {
 
     private final StepService stepService;
     private final FileService fileService;
+    private final StepDtoValidator stepDtoValidator;
 
     @GetMapping("steps")
     public List<StepDto> showAllSteps() {
@@ -47,7 +49,7 @@ public class StepController {
     @PostMapping("steps")
     public StepDto addStep(@RequestPart(name = "stepDto") StepDto stepDto,
                            @RequestPart(name = "file") MultipartFile file) {
-        System.out.println(stepDto);
+        stepDtoValidator.validate(stepDto);
         if (file != null) {
             try {
                 FileTable fileTable = new FileTable();
@@ -73,6 +75,7 @@ public class StepController {
     public StepDto changeStep(@PathVariable Long id,
                               @RequestPart(name = "stepDto") StepDto stepDto,
                               @RequestPart(name = "file", required = false) MultipartFile file) {
+        stepDtoValidator.checkValidUpdateFields(stepDto);
         if (file != null) {
             try {
                 FileTable fileTable = new FileTable();

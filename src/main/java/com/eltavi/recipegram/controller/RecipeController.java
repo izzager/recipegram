@@ -7,6 +7,7 @@ import com.eltavi.recipegram.exception.NotFoundException;
 import com.eltavi.recipegram.mapper.RecipeMapper;
 import com.eltavi.recipegram.service.RecipeService;
 import com.eltavi.recipegram.service.UserService;
+import com.eltavi.recipegram.validator.RecipeDtoValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +27,7 @@ public class RecipeController {
     private final RecipeService recipeService;
     private final UserService userService;
     private final RecipeMapper recipeMapper;
+    private final RecipeDtoValidator recipeDtoValidator;
 
     @GetMapping("recipes")
     public List<RecipeDto> showAllRecipes() {
@@ -39,9 +41,9 @@ public class RecipeController {
 
     @PostMapping("recipes")
     public RecipeDto addRecipe(@RequestBody RecipeDto recipeDto) {
-        System.out.println(recipeDto);
-        User owner = userService.findUserById(recipeDto.getUserId());
+        recipeDtoValidator.validate(recipeDto);
         Recipe recipe = recipeMapper.recipeDtoToRecipe(recipeDto);
+        User owner = userService.findUserById(recipeDto.getUserId());
         recipe.setUser(owner);
         return recipeService.addRecipe(recipe);
     }
