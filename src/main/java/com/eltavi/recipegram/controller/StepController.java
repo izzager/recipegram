@@ -59,21 +59,22 @@ public class StepController {
                            @RequestPart(name = "stepDto") StepDto stepDto,
                            @RequestPart(name = "file", required = false) MultipartFile file) {
         stepDtoValidator.validate(stepDto);
+
+        Long userId = userService.findByUsername(auth.getName()).getId();
+        Recipe recipe = recipeService.findRecipeById(stepDto.getRecipeId());
+        if (!recipe.getUser().getId().equals(userId)) {
+            throw new ResourceForbiddenException("You can't change other's recipes");
+        }
+
         if (file != null) {
             try {
                 FileTable fileTable = new FileTable();
                 //convert file input stream to byte array, so that we can store it into db
                 byte[] bytes = IOUtils.toByteArray(file.getInputStream());
-                fileTable.setPhotoName(file.getName());
+                fileTable.setPhotoName(file.getOriginalFilename());
                 fileTable.setPhotoContentLength(Long.valueOf(file.getSize()).intValue());
                 fileTable.setPhotoContentType(file.getContentType());
                 fileTable.setPhotoBlob(bytes);
-
-                Long userId = userService.findByUsername(auth.getName()).getId();
-                Recipe recipe = recipeService.findRecipeById(stepDto.getRecipeId());
-                if (!recipe.getUser().getId().equals(userId)) {
-                    throw new ResourceForbiddenException("You can't change other's recipes");
-                }
 
                 fileService.saveFile(fileTable);
                 stepDto.setImageStep(fileTable);
@@ -92,22 +93,16 @@ public class StepController {
                               @RequestPart(name = "stepDto") StepDto stepDto,
                               @RequestPart(name = "file", required = false) MultipartFile file) {
         stepDtoValidator.checkValidUpdateFields(stepDto);
+        checkUserRights(auth, id);
         if (file != null) {
             try {
                 FileTable fileTable = new FileTable();
                 //convert file input stream to byte array, so that we can store it into db
                 byte[] bytes = IOUtils.toByteArray(file.getInputStream());
-                fileTable.setPhotoName(file.getName());
+                fileTable.setPhotoName(file.getOriginalFilename());
                 fileTable.setPhotoContentLength(Long.valueOf(file.getSize()).intValue());
                 fileTable.setPhotoContentType(file.getContentType());
                 fileTable.setPhotoBlob(bytes);
-
-                Long userId = userService.findByUsername(auth.getName()).getId();
-                Step step = stepService.findStepById(id);
-                Recipe recipe = recipeService.findRecipeById(step.getRecipe().getId());
-                if (!recipe.getUser().getId().equals(userId)) {
-                    throw new ResourceForbiddenException("You can't change other's recipes");
-                }
 
                 Long fileId = stepService.deleteFile(id);
                 fileService.deleteFileById(fileId);
@@ -128,17 +123,21 @@ public class StepController {
     @DeleteMapping("{id}")
     public void deleteStep(Principal auth,
                            @PathVariable Long id) {
-        Long userId = userService.findByUsername(auth.getName()).getId();
-        Step step = stepService.findStepById(id);
-        Recipe recipe = recipeService.findRecipeById(step.getRecipe().getId());
-        if (!recipe.getUser().getId().equals(userId)) {
-            throw new ResourceForbiddenException("You can't change other's recipes");
-        }
+        checkUserRights(auth, id);
 
         if (!stepService.deleteStep(id)) {
             throw new NotFoundException("There is no step with this id");
         } else {
             fileService.deleteFile(id);
+        }
+    }
+
+    private void checkUserRights(Principal auth, Long id) {
+        Long userId = userService.findByUsername(auth.getName()).getId();
+        Step step = stepService.findStepById(id);
+        Recipe recipe = recipeService.findRecipeById(step.getRecipe().getId());
+        if (!recipe.getUser().getId().equals(userId)) {
+            throw new ResourceForbiddenException("You can't change other's recipes");
         }
     }
 
