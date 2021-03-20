@@ -13,6 +13,7 @@ import com.eltavi.recipegram.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -93,6 +94,26 @@ public class RecipeServiceImpl implements RecipeService {
         } else {
             throw new NotFoundException("There is no recipe with this id");
         }
+    }
+
+    @Override
+    public List<RecipeDto> getNews(User user, int size) {
+        List<Recipe> news = new ArrayList<>();
+        user.getSubscriptions()
+                .forEach(following -> news.addAll(getRecipesByUser(following)));
+        news.sort((a, b) -> b.getPublicationDate().compareTo(a.getPublicationDate()));
+        List<RecipeDto> newsDtos = news.stream()
+                .map(recipeMapper::recipeToRecipeDto)
+                .limit(size)
+                .collect(Collectors.toList());
+        for (int i = 0; i < newsDtos.size(); i++) {
+            pullSubscribers(news.get(i), newsDtos.get(i));
+        }
+        return newsDtos;
+    }
+
+    private List<Recipe> getRecipesByUser(User user) {
+        return recipeRepository.findAllByUser(user);
     }
 
     private void pullSubscribers(Recipe recipe, RecipeDto recipeDto) {
