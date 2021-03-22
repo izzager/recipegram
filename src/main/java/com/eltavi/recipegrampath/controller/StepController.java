@@ -101,16 +101,13 @@ public class StepController {
         return stepService.changeStep(stepDto);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("steps/{id}")
     public void deleteStep(Principal auth,
                            @PathVariable Long id) {
         checkUserRights(auth, id);
-
-        if (!stepService.deleteStep(id)) {
-            throw new NotFoundException("There is no step with this id");
-        } else {
-            fileService.deleteFile(id);
-        }
+        Step step = stepService.findStepById(id);
+        stepService.deleteStep(id);
+        fileService.deleteFile(step.getImageStep().getId());
     }
 
     private void checkUserRights(Principal auth, Long id) {
