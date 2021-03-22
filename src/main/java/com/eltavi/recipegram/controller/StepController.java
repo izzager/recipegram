@@ -5,7 +5,6 @@ import com.eltavi.recipegram.entity.FileTable;
 import com.eltavi.recipegram.entity.Recipe;
 import com.eltavi.recipegram.entity.Step;
 import com.eltavi.recipegram.exception.BadRequestException;
-import com.eltavi.recipegram.exception.NotFoundException;
 import com.eltavi.recipegram.exception.ResourceForbiddenException;
 import com.eltavi.recipegram.service.FileService;
 import com.eltavi.recipegram.service.RecipeService;
@@ -14,6 +13,7 @@ import com.eltavi.recipegram.service.UserService;
 import com.eltavi.recipegram.validator.StepDtoValidator;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
+import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -74,7 +74,7 @@ public class StepController {
                 fileTable.setPhotoName(file.getOriginalFilename());
                 fileTable.setPhotoContentLength(Long.valueOf(file.getSize()).intValue());
                 fileTable.setPhotoContentType(file.getContentType());
-                fileTable.setPhotoBlob(bytes);
+                fileTable.setPhotoBlob(Base64Utils.encodeToString(bytes));
 
                 fileService.saveFile(fileTable);
                 stepDto.setImageStep(fileTable);
@@ -102,7 +102,7 @@ public class StepController {
                 fileTable.setPhotoName(file.getOriginalFilename());
                 fileTable.setPhotoContentLength(Long.valueOf(file.getSize()).intValue());
                 fileTable.setPhotoContentType(file.getContentType());
-                fileTable.setPhotoBlob(bytes);
+                fileTable.setPhotoBlob(Base64Utils.encodeToString(bytes));
 
                 Long fileId = stepService.deleteFile(id);
                 fileService.deleteFileById(fileId);
@@ -120,16 +120,13 @@ public class StepController {
         }
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("steps/{id}")
     public void deleteStep(Principal auth,
                            @PathVariable Long id) {
         checkUserRights(auth, id);
-
-        if (!stepService.deleteStep(id)) {
-            throw new NotFoundException("There is no step with this id");
-        } else {
-            fileService.deleteFile(id);
-        }
+        Step step = stepService.findStepById(id);
+        stepService.deleteStep(id);
+        fileService.deleteFile(step.getImageStep().getId());
     }
 
     private void checkUserRights(Principal auth, Long id) {
