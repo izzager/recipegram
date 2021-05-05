@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface StepRepository extends JpaRepository<Step, Long> {
     List<Step> findAllByRecipeId(Long recipeId);
+    List<Step> findAllByDescriptionContains(String searchString);
 }

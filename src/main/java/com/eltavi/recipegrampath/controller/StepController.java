@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -137,6 +138,34 @@ public class StepController {
         } catch (IOException e) {
             throw new BadRequestException("You failed to upload => " + e.getMessage());
         }
+    }
+
+    @PostMapping("loadData")
+    public void loadData(@RequestPart(name = "stepDto") StepDto stepDto,
+                         @RequestPart(name = "file") MultipartFile file) {
+        stepDtoValidator.validate(stepDto);
+
+        for (int i = 0; i < 1000; i++) {
+            FileTable fileTable = new FileTable();
+            loadFile(fileTable, file);
+            fileService.saveFile(fileTable);
+
+            StepDto savedDto = new StepDto();
+            savedDto.setDescription(stepDto.getDescription());
+            savedDto.setRecipeId(stepDto.getRecipeId());
+            savedDto.setImageStep(fileTable);
+            stepService.save(savedDto);
+        }
+    }
+
+    @GetMapping("steps/search")
+    public List<FileTable> findBySearchString(@RequestParam String searchString) {
+        return fileService.findAllFilesWithSubstring(searchString);
+    }
+
+    @GetMapping("steps/searchByDescription")
+    public List<StepDto> findStepBySearchString(@RequestParam String searchString) {
+        return stepService.findAllStepsByDescription(searchString);
     }
 
 }

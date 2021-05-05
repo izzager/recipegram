@@ -15,4 +15,5 @@ public interface StepService {
     StepDto changeStep(StepDto stepDto);
     int findCountStepsInRecipe(Long recipeId);
     Long deleteFile(Long stepId);
+    List<StepDto> findAllStepsByDescription(String searchString);
 }

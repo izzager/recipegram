@@ -82,5 +82,11 @@ public class StepServiceImpl implements StepService {
         stepRepository.save(step);
         return fileId;
     }
-
+    @Override
+    public List<StepDto> findAllStepsByDescription(String searchString) {
+        return stepRepository.findAllByDescriptionContains(searchString)
+                .stream()
+                .map(stepMapper::stepToStepDto)
+                .collect(Collectors.toList());
+    }
 }
