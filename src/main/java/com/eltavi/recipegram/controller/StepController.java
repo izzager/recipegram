@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -87,6 +88,49 @@ public class StepController {
         }
     }
 
+//    @PostMapping("steps")
+//    public StepDto addTextStep(Principal auth,
+//                           @RequestPart(name = "stepDto") StepDto stepDto,
+//                           @RequestPart(name = "file", required = false) MultipartFile file) {
+//        stepDtoValidator.validate(stepDto);
+//
+//        Long userId = userService.findByUsername(auth.getName()).getId();
+//        Recipe recipe = recipeService.findRecipeById(stepDto.getRecipeId());
+//        if (!recipe.getUser().getId().equals(userId)) {
+//            throw new ResourceForbiddenException("You can't change other's recipes");
+//        }
+//
+//        if (file != null) {
+//            try {
+//                FileTable fileTable = new FileTable();
+//                //convert file input stream to byte array, so that we can store it into db
+//                byte[] bytes = IOUtils.toByteArray(file.getInputStream());
+//                fileTable.setPhotoName(file.getOriginalFilename());
+//                fileTable.setPhotoContentLength(Long.valueOf(file.getSize()).intValue());
+//                fileTable.setPhotoContentType(file.getContentType());
+//                fileTable.setPhotoBlob(Arrays.toString(bytes));
+//
+//                fileService.saveFile(fileTable);
+//                stepDto.setImageStep(fileTable);
+//                return stepService.save(stepDto);
+//            } catch (IOException e) {
+//                throw new BadRequestException("You failed to upload => " + e.getMessage());
+//            }
+//        } else {
+//            throw new BadRequestException("You failed to upload");
+//        }
+//    }
+
+    @GetMapping("steps/search")
+    public List<FileTable> findBySearchString(@RequestParam String searchString) {
+        return fileService.findAllFilesWithSubstring(searchString);
+    }
+
+    @GetMapping("steps/searchByDescription")
+    public List<StepDto> findStepBySearchString(@RequestParam String searchString) {
+        return stepService.findAllStepsByDescription(searchString);
+    }
+
     @PatchMapping("steps/{id}")
     public StepDto changeStep(Principal auth,
                               @PathVariable Long id,
@@ -135,6 +179,33 @@ public class StepController {
         Recipe recipe = recipeService.findRecipeById(step.getRecipe().getId());
         if (!recipe.getUser().getId().equals(userId)) {
             throw new ResourceForbiddenException("You can't change other's recipes");
+        }
+    }
+
+    @PostMapping("loadData")
+    public void loadData(@RequestPart(name = "stepDto") StepDto stepDto,
+                         @RequestPart(name = "file") MultipartFile file) {
+        stepDtoValidator.validate(stepDto);
+
+        try {
+            byte[] bytes = IOUtils.toByteArray(file.getInputStream());
+            String str = Base64Utils.encodeToString(bytes);
+            for (int i = 0; i < 1000; i++) {
+                FileTable fileTable = new FileTable();
+                fileTable.setPhotoName(file.getOriginalFilename());
+                fileTable.setPhotoContentLength(Long.valueOf(file.getSize()).intValue());
+                fileTable.setPhotoContentType(file.getContentType());
+                fileTable.setPhotoBlob(str);
+                fileService.saveFile(fileTable);
+
+                StepDto savedDto = new StepDto();
+                savedDto.setDescription(stepDto.getDescription());
+                savedDto.setRecipeId(stepDto.getRecipeId());
+                savedDto.setImageStep(fileTable);
+                stepService.save(savedDto);
+            }
+        } catch (IOException e) {
+            throw new BadRequestException("You failed to upload => " + e.getMessage());
         }
     }
 

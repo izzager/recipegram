@@ -7,6 +7,8 @@ import com.eltavi.recipegram.service.FileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class FileServiceImpl implements FileService {
@@ -34,5 +36,10 @@ public class FileServiceImpl implements FileService {
     @Override
     public FileTable saveFile(FileTable fileTable) {
         return fileRepository.save(fileTable);
+    }
+
+    @Override
+    public List<FileTable> findAllFilesWithSubstring(String searchString) {
+        return fileRepository.findAllByPhotoBlobContains(searchString);
     }
 }

@@ -47,6 +47,7 @@ public class StepServiceImpl implements StepService {
     public StepDto save(StepDto stepDto) {
         Step step = stepMapper.stepDtoToStep(stepDto);
         step.setStepNumber(findCountStepsInRecipe(stepDto.getRecipeId()) + 1);
+        //step.setStepNumber(1);
         return stepMapper.stepToStepDto(stepRepository.save(step));
     }
 
@@ -81,6 +82,14 @@ public class StepServiceImpl implements StepService {
         step.setImageStep(null);
         stepRepository.save(step);
         return fileId;
+    }
+
+    @Override
+    public List<StepDto> findAllStepsByDescription(String searchString) {
+        return stepRepository.findAllByDescriptionContains(searchString)
+                .stream()
+                .map(stepMapper::stepToStepDto)
+                .collect(Collectors.toList());
     }
 
 }
